@@ -1,0 +1,86 @@
+;
+; DxgBeeMovieHell.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=DxgBeeMovieHell.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+DxgBeeMovieHell_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+DxgBeeMovieHell.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%DxgBeeMovieHell.DeviceDesc%=DxgBeeMovieHell_Device, Root\DxgBeeMovieHell ; TODO: edit hw-id
+
+[DxgBeeMovieHell_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+DxgBeeMovieHell.sys
+
+;-------------- Service installation
+[DxgBeeMovieHell_Device.NT.Services]
+AddService = DxgBeeMovieHell,%SPSVCINST_ASSOCSERVICE%, DxgBeeMovieHell_Service_Inst
+
+; -------------- DxgBeeMovieHell driver install sections
+[DxgBeeMovieHell_Service_Inst]
+DisplayName    = %DxgBeeMovieHell.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\DxgBeeMovieHell.sys
+
+;
+;--- DxgBeeMovieHell_Device Coinstaller installation ------
+;
+
+[DxgBeeMovieHell_Device.NT.CoInstallers]
+AddReg=DxgBeeMovieHell_Device_CoInstaller_AddReg
+CopyFiles=DxgBeeMovieHell_Device_CoInstaller_CopyFiles
+
+[DxgBeeMovieHell_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[DxgBeeMovieHell_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[DxgBeeMovieHell_Device.NT.Wdf]
+KmdfService =  DxgBeeMovieHell, DxgBeeMovieHell_wdfsect
+[DxgBeeMovieHell_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "DxgBeeMovieHell Installation Disk"
+DxgBeeMovieHell.DeviceDesc = "DxgBeeMovieHell Device"
+DxgBeeMovieHell.SVCDESC = "DxgBeeMovieHell Service"
