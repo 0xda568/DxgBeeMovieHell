@@ -19,11 +19,6 @@ BOOL(*NtGdiPatBlt)(HDC hdc, int x, int y, int w, int h, DWORD rop) = 0;
 void(*GreExtTextOutW)(std::uint64_t dc, std::uint32_t left, std::uint32_t top, std::uint64_t, std::uint64_t,LPCWSTR text, std::uint32_t textSize, std::uint64_t, std::uint64_t, std::uint64_t);
 int(*GreGetDeviceCaps)(HDC hdc, int index) = 0;
 
-HBRUSH brush = 0;
-HFONT def = 0;
-ULONG timeSec;
-LARGE_INTEGER SystemTime;
-
 int64_t ret = 0;
 
 PUCHAR secondSubmitCommand = 0;
@@ -197,9 +192,6 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT pDriverObject, UNICODE_STRING regPath) {
 	GreGetDeviceCaps = (int(*)(HDC hdc, int index))RtlFindExportedRoutineByName(basis, "GreGetDeviceCaps");
 
 	uintptr_t hookPtr = reinterpret_cast<uintptr_t>(hookFunc);
-
-	KeQuerySystemTime(&SystemTime);
-	RtlTimeToSecondsSince1970(&SystemTime, &timeSec);
 
 	WriteToROMem(secondSubmitCommand, &hookPtr, sizeof(ULONGLONG));
 
